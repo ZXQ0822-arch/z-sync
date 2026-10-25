@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Z-Sync · 找不到相机</title>
+  <link rel="stylesheet" href="../pages/screen.css" />
+  <style>
+    a.connect-go,
+    button.connect-go {
+      margin: 16px 0 0; height: 56px; width: 100%;
+      border-radius: 999px; border: 0;
+      background: #f7f4ee; color: #1a1816;
+      box-shadow: 0 10px 28px rgba(0,0,0,.45);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      text-decoration: none; font-size: 17px; font-weight: 600; letter-spacing: 0.06em;
+      font-family: inherit; cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    a.connect-go:hover,
+    button.connect-go:hover { background: #fff; box-shadow: 0 14px 32px rgba(0,0,0,.5); }
+    a.connect-go:active,
+    button.connect-go:active { background: #ddd6cb; transform: translateY(1px); box-shadow: 0 4px 12px rgba(0,0,0,.4); }
+    a.connect-go svg,
+    button.connect-go svg { width: 18px; height: 18px; flex: none; }
+    #miss { position: relative; }
+    .retry-mask {
+      position: absolute; inset: 0; z-index: 4;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px 22px;
+      background: rgba(18,18,20,.32);
+      backdrop-filter: blur(22px) saturate(1.5);
+      -webkit-backdrop-filter: blur(22px) saturate(1.5);
+    }
+    .retry-mask[hidden] { display: none; }
+    .retry-card {
+      width: min(100%, 300px);
+      padding: 22px 16px 16px;
+      border-radius: 28px;
+      background: #242426;
+      box-shadow: 0 18px 40px rgba(0,0,0,.5);
+    }
+    .retry-card p {
+      margin: 0 0 18px;
+      color: #f4f1ea;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.45;
+      text-align: center;
+      letter-spacing: -0.02em;
+    }
+    .retry-actions { display: flex; flex-direction: row; gap: 10px; }
+    a.retry-yes,
+    button.retry-no {
+      flex: 1 1 0; width: auto; height: 48px; margin: 0; border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: inherit; font-size: 16px; letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+    a.retry-yes {
+      background: #f7f4ee; color: #1a1816; border: 0;
+      text-decoration: none; font-weight: 600;
+    }
+    a.retry-yes:hover { background: #fff; }
+    a.retry-yes:active { background: #ddd6cb; }
+    button.retry-no {
+      background: transparent; color: #f4f1ea;
+      border: 1px solid rgba(244,241,234,.45);
+      font-weight: 500;
+    }
+    button.retry-no:hover { border-color: #f4f1ea; }
+    button.retry-no:active { background: rgba(244,241,234,.08); }
+  </style>
+</head>
+<body>
+  <aside>
+    <h1><a href="../index.html">Z-Sync</a></h1>
+    <p class="lead">暗色稿，就是现在应用在用的这一套。左边是全部页面。手机里的按钮按现在的用法往下走。标了「还没做」的，应用里还没有。</p>
+    <nav id="nav">
+      <a href="../index.html">目录</a>
+      <p style="margin:18px 0 0;color:#f4f1ea;font-weight:500;">第一次连接</p>
+      <a class="sub" href="01a-home.html">1A 首页</a>
+      <a class="sub" href="01b-connecting-back.html">1B 连接中返回</a>
+      <a class="sub on" href="01c-cant-find-camera.html">找不到相机</a>
+      <a class="sub" href="01d-password-error.html">Wi-Fi 密码错误</a>
+      <p style="margin:18px 0 0;color:#f4f1ea;font-weight:500;">第二次连接</p>
+      <a class="sub" href="../02a/02a-home.html">2A 首页</a>
+      <a class="sub" href="../02a/02a-home-return.html">找到的相机</a>
+      <a class="sub" href="../02a/02a-connecting.html">正在连接</a>
+      <a class="sub" href="../02a/02c-cant-find-camera.html">找不到相机</a>
+      <a class="sub" href="../02a/02d-password-error.html">Wi-Fi 密码错误</a>
+      <p style="margin:18px 0 0;color:#f4f1ea;font-weight:500;">其它</p>
+      <a href="../pages/02b-connecting-back.html">2B 连接中返回</a>
+      <a href="../pages/05-waiting-for-system-confirmation.html">等系统确认</a>
+      <a href="../pages/06-photos.html">照片</a>
+      <a href="../pages/07-download-progress.html">本次下载</a>
+      <a href="../pages/08-style.html">风格</a>
+      <a class="soon" href="../pages/10-frame.html">边框 · 还没做</a>
+      <a class="soon" href="../pages/09-settings.html">设置 · 还没做</a>
+      <a href="../pages/11-hotspot-off.html">热点没开</a>
+    </nav>
+  </aside>
+<main>
+    <div class="stage">
+      <div class="stage-phone">
+        <div class="bezel">
+          <div class="glass">
+            <div class="status"><span>9:41</span><span>5G</span></div>
+            <section class="screen on" id="miss">
+            <div class="pad">
+              <p style="margin:12px 0 6px;color:#f4f1ea;font-size:20px;font-weight:500;line-height:1.4;letter-spacing:-0.02em;">找不到相机</p>
+              <p style="margin:0 0 6px;color:#b0aaa2;font-size:16px;font-weight:400;line-height:1.4;">连接已超时一分钟</p>
+              <p style="margin:0 0 12px;color:#f4f1ea;font-size:16px;font-weight:500;line-height:1.4;">请确认相机Wi-Fi已打开</p>
+              <ol style="list-style:none;margin:0;padding:0;border-radius:16px;overflow:hidden;background:#343436;">
+                <li style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 16px;border-bottom:1px solid rgba(244,241,234,.16);color:#f4f1ea;font-size:15px;line-height:1.4;"><span style="flex:none;width:1.2em;color:#b0aaa2;font-weight:500;">1</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>按 MENU</li>
+                <li style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 16px;border-bottom:1px solid rgba(244,241,234,.16);color:#f4f1ea;font-size:15px;line-height:1.4;"><span style="flex:none;width:1.2em;color:#b0aaa2;font-weight:500;">2</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.5 6.2a4.2 4.2 0 0 0-5.8 5.8L4 16.7 7.3 20l4.7-4.7a4.2 4.2 0 0 0 5.8-5.8L15 12.3 11.7 9z"/></svg>点击类似扳手的图标</li>
+                <li style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 16px;border-bottom:1px solid rgba(244,241,234,.16);color:#f4f1ea;font-size:15px;line-height:1.4;"><span style="flex:none;width:1.2em;color:#b0aaa2;font-weight:500;">3</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg>连接至智能设备</li>
+                <li style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 16px;border-bottom:1px solid rgba(244,241,234,.16);color:#f4f1ea;font-size:15px;line-height:1.4;"><span style="flex:none;width:1.2em;color:#b0aaa2;font-weight:500;">4</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8 15.5a6 6 0 0 1 8 0"/><circle cx="12" cy="18.5" r="1.2" fill="currentColor" stroke="none"/></svg>Wi-Fi连接</li>
+                <li style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 16px;color:#f4f1ea;font-size:15px;line-height:1.4;"><span style="flex:none;width:1.2em;color:#b0aaa2;font-weight:500;">5</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 0 0 7.1.4l1.5-1.5a5 5 0 0 0-7.1-7.1L10.4 6"/><path d="M14 11a5 5 0 0 0-7.1-.4l-1.5 1.5a5 5 0 0 0 7.1 7.1L13.6 18"/></svg>建立Wi-Fi连接</li>
+              </ol>
+              <button class="connect-go" type="button" id="retryOpen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>继续连接</button>
+            </div>
+            <div class="retry-mask" id="retryConfirm" hidden>
+              <div class="retry-card">
+                <p>相机Wi-Fi已开启</p>
+                <div class="retry-actions">
+                  <button class="retry-no" type="button" id="retryStay">取消</button>
+                  <a class="retry-yes" href="01b-connecting-back.html">确认</a>
+                </div>
+              </div>
+            </div>
+          </section>
+          </div>
+        </div>
+        <p class="caption" id="caption">第一次连接。继续连接先问「相机Wi-Fi已开启」。确认进入 1B 正在连接。</p>
+      </div>
+
+    </div>
+  </main>
+  <script src="../pages/screen.js"></script>
+  <script>
+    const retryConfirm = document.getElementById("retryConfirm");
+    document.getElementById("retryOpen").addEventListener("click", () => {
+      retryConfirm.hidden = false;
+    });
+    document.getElementById("retryStay").addEventListener("click", () => {
+      retryConfirm.hidden = true;
+    });
+  </script>
+</body>
+</html>

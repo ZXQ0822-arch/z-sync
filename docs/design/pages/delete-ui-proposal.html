@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>删除 UI 重设计 · 实心按钮</title>
+<style>
+  :root {
+    --bg: #1c1c1e;
+    --phone: #3a3a3e;
+    --card: #2c2c2e;
+    --sheet: #2c2c2e;
+    --ink: #ffffff;
+    --muted: #8e8e93;
+    --line: rgba(244, 241, 234, 0.18);
+    --stone: #e6dfd4;
+    --stone-ink: #2c2926;
+    --cancel: #3a3a3c;
+    --cancel-ink: #ffffff;
+    --delete: #ff453a;
+    --delete-ink: #ffffff;
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
+    padding: 44px 24px; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .lead { color: var(--muted); font-size: 14px; line-height: 1.7; margin: 0 0 30px; max-width: 760px; }
+  .lead b { color: var(--ink); font-weight: 600; }
+
+  .stage { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; }
+
+  .phone {
+    width: 300px; border-radius: 40px; padding: 8px;
+    background: linear-gradient(160deg, #6a6a6e, #3e3e42 42%, #2a2a2e);
+    box-shadow: 0 30px 60px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.14);
+  }
+  .glass {
+    height: 580px; border-radius: 32px; background: var(--phone); overflow: hidden;
+    position: relative; display: flex; flex-direction: column;
+  }
+  .phone h2 { font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: .06em; margin: 14px 0 8px; text-align: center; }
+
+  /* ---- 确认弹窗 ---- */
+  .scrim {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    background: rgba(20,20,22,.46); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    padding: 22px;
+  }
+  .sheet {
+    width: 100%; background: var(--sheet); border-radius: var(--radius);
+    padding: 20px 18px 18px; box-shadow: 0 18px 40px rgba(0,0,0,.45);
+  }
+  .sheet .aux { font-size: 12px; color: var(--muted); letter-spacing: .04em; margin-bottom: 14px; }
+  .sheet h3 {
+    font-size: 18px; font-weight: 600; line-height: 1.35; text-align: center;
+    margin: 0 auto 22px; max-width: 92%; letter-spacing: -0.01em;
+  }
+  .row { display: flex; gap: 10px; }
+  .row button {
+    flex: 1; height: 46px; border: 0; border-radius: 12px; cursor: pointer;
+    font: inherit; font-size: 16px; font-weight: 600; letter-spacing: .01em;
+    transition: transform .12s ease, opacity .12s ease;
+  }
+  .row button:active { transform: scale(.95); }
+  .btn-cancel { background: var(--cancel); color: var(--cancel-ink); }
+  .btn-delete { background: var(--delete); color: var(--delete-ink); }
+
+  /* ---- 选择栏 ---- */
+  .selection {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 14px 22px;
+    background: linear-gradient(180deg, transparent, rgba(28,28,30,.75));
+  }
+  .selbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    background: var(--card); border-radius: 16px; padding: 10px 12px;
+  }
+  .selbar .count { color: var(--muted); font-size: 13px; }
+  .selbar .actions { display: flex; gap: 8px; }
+  .chip {
+    border: 0; border-radius: 11px; cursor: pointer; font: inherit;
+    font-size: 14px; font-weight: 600; padding: 9px 15px; transition: transform .12s ease;
+  }
+  .chip:active { transform: scale(.95); }
+  .chip-delete { background: var(--delete); color: var(--delete-ink); }
+  .chip-sync { background: var(--stone); color: var(--stone-ink); }
+
+  /* ---- 预览底部 ---- */
+  .previewbar {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 16px 22px;
+    display: flex; align-items: center; gap: 10px;
+    background: linear-gradient(180deg, transparent, rgba(0,0,0,.7));
+  }
+  .previewbar .idx { color: var(--muted); font-size: 13px; margin-right: auto; }
+  .pill {
+    border: 0; border-radius: 22px; cursor: pointer; font: inherit;
+    font-size: 14px; font-weight: 600; padding: 10px 20px; transition: transform .12s ease;
+  }
+  .pill:active { transform: scale(.95); }
+  .pill-close { background: rgba(120,120,128,.32); color: #fff; }
+  .pill-delete { background: var(--delete); color: var(--delete-ink); }
+
+  /* ---- 色块 ---- */
+  .swatches { margin-top: 34px; border-top: 1px solid rgba(255,255,255,.08); padding-top: 22px; }
+  .swatches .group { margin-bottom: 20px; }
+  .swatches .gtitle { font-size: 12px; color: var(--muted); letter-spacing: .06em; margin-bottom: 10px; }
+  .swatchrow { display: flex; gap: 16px; flex-wrap: wrap; }
+  .sw { cursor: pointer; text-align: center; }
+  .sw .chip2 { width: 62px; height: 62px; border-radius: 14px; margin: 0 auto 6px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); }
+  .sw .name { font-size: 12px; color: var(--muted); }
+  .sw .hex { font-size: 11px; color: var(--ink); letter-spacing: .04em; margin-top: 2px; opacity: .85; }
+  .sw.on .chip2 { box-shadow: 0 0 0 3px var(--stone); }
+  .sw.on .name { color: var(--ink); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>删除 UI 重设计 · 实心按钮</h1>
+    <p class="lead">
+      按你给的 iOS 深色规范重画：<b>取消/删除都改成实心填充按钮，去掉线框</b>。取消用深灰实心、白字；删除用系统红实心、白字。
+      弹窗卡片去边框、大圆角、标题居中加粗，按下去整体缩到 0.95。下面三个场景：确认弹窗、选择栏、大图预览底部。
+      点色块可以换「删除」的颜色，选好告诉我用哪个。
+    </p>
+
+    <div class="stage">
+      <!-- 确认弹窗 -->
+      <div>
+        <div class="phone"><div class="glass">
+          <div class="scrim">
+            <div class="sheet">
+              <div class="aux">确认弹窗</div>
+              <h3>从相机删除这张照片？</h3>
+              <div class="row">
+                <button class="btn-cancel">取消</button>
+                <button class="btn-delete" id="dlgDelete">删除</button>
+              </div>
+            </div>
+          </div>
+        </div></div>
+        <h2>确认弹窗</h2>
+      </div>
+
+      <!-- 选择栏 -->
+      <div>
+        <div class="phone"><div class="glass">
+          <div class="selection">
+            <div class="selbar">
+              <span class="count">已选 2 张</span>
+              <div class="actions">
+                <button class="chip chip-delete" id="barDelete">删除</button>
+                <button class="chip chip-sync">同步到相册</button>
+              </div>
+            </div>
+          </div>
+        </div></div>
+        <h2>选择栏</h2>
+      </div>
+
+      <!-- 预览底部 -->
+      <div>
+        <div class="phone"><div class="glass">
+          <div class="previewbar">
+            <span class="idx">1 / 9</span>
+            <button class="pill pill-close">关闭</button>
+            <button class="pill pill-delete" id="pvDelete">从相机删除</button>
+          </div>
+        </div></div>
+        <h2>大图预览底部</h2>
+      </div>
+    </div>
+
+    <div class="swatches">
+      <div class="group">
+        <div class="gtitle">删除按钮颜色（实心 · 白字）</div>
+        <div class="swatchrow">
+          <div class="sw on" data-c="#FF453A" onclick="pickDelete(this)">
+            <div class="chip2" style="background:#FF453A"></div>
+            <div class="name">系统红</div><div class="hex">#FF453A</div>
+          </div>
+          <div class="sw" data-c="#E04F3F" onclick="pickDelete(this)">
+            <div class="chip2" style="background:#E04F3F"></div>
+            <div class="name">暖红</div><div class="hex">#E04F3F</div>
+          </div>
+          <div class="sw" data-c="#D56B5A" onclick="pickDelete(this)">
+            <div class="chip2" style="background:#D56B5A"></div>
+            <div class="name">柔和红</div><div class="hex">#D56B5A</div>
+          </div>
+          <div class="sw" data-c="#B8473A" onclick="pickDelete(this)">
+            <div class="chip2" style="background:#B8473A"></div>
+            <div class="name">深红</div><div class="hex">#B8473A</div>
+          </div>
+        </div>
+      </div>
+      <div class="group">
+        <div class="gtitle">取消按钮颜色（实心 · 白字）</div>
+        <div class="swatchrow">
+          <div class="sw" data-c="#3A3A3C" onclick="pickCancel(this)">
+            <div class="chip2" style="background:#3A3A3C"></div>
+            <div class="name">深灰</div><div class="hex">#3A3A3C</div>
+          </div>
+          <div class="sw" data-c="#2C2C2E" onclick="pickCancel(this)">
+            <div class="chip2" style="background:#2C2C2E"></div>
+            <div class="name">更深灰</div><div class="hex">#2C2C2E</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function pickDelete(el) {
+      document.querySelectorAll('.sw[data-c]').forEach(s => s.classList.remove('on'));
+      el.classList.add('on');
+      const c = el.dataset.c;
+      document.documentElement.style.setProperty('--delete', c);
+      ['dlgDelete','barDelete','pvDelete'].forEach(id => {
+        const b = document.getElementById(id); if (b) b.style.background = c;
+      });
+    }
+    function pickCancel(el) {
+      const c = el.dataset.c;
+      document.documentElement.style.setProperty('--cancel', c);
+      document.querySelectorAll('.btn-cancel').forEach(b => b.style.background = c);
+    }
+  </script>
+</body>
+</html>

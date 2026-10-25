@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Z-Sync 暗房</title>
+  <link rel="stylesheet" href="pages/screen.css" />
+</head>
+<body>
+  <aside>
+    <h1><a href="index.html">Z-Sync</a></h1>
+    <p class="lead">两个包分开。第一次连接只链 01 的页。第二次连接只链 02a 的页。</p>
+    <nav id="nav">
+      <a href="index.html">目录</a>
+      <p style="margin:18px 0 0;color:#f4f1ea;font-weight:500;">第一次连接</p>
+      <a class="sub" href="01a/01a-home.html">1A 首页</a>
+      <a class="sub" href="01a/01b-connecting-back.html">1B 连接中返回</a>
+      <a class="sub" href="01a/01c-cant-find-camera.html">找不到相机</a>
+      <a class="sub" href="01a/01d-password-error.html">Wi-Fi 密码错误</a>
+      <p style="margin:18px 0 0;color:#f4f1ea;font-weight:500;">第二次连接</p>
+      <a class="sub" href="02a/02a-home.html">2A 首页</a>
+      <a class="sub" href="02a/02a-home-return.html">找到的相机</a>
+      <a class="sub" href="02a/02a-connecting.html">正在连接</a>
+      <a class="sub" href="02a/02c-cant-find-camera.html">找不到相机</a>
+      <a class="sub" href="02a/02d-password-error.html">Wi-Fi 密码错误</a>
+      <p style="margin:18px 0 0;color:#f4f1ea;font-weight:500;">其它</p>
+      <a href="pages/02b-connecting-back.html">2B 连接中返回</a>
+      <a href="pages/05-waiting-for-system-confirmation.html">等系统确认</a>
+      <a href="pages/06-photos.html">照片</a>
+      <a href="pages/07-download-progress.html">本次下载</a>
+      <a href="pages/08-style.html">风格</a>
+      <a class="soon" href="pages/10-frame.html">边框 · 还没做</a>
+      <a class="soon" href="pages/09-settings.html">设置 · 还没做</a>
+      <a href="pages/11-hotspot-off.html">热点没开</a>
+    </nav>
+  </aside>
+  <main class="hub">
+    <h2 style="margin:0 0 8px;font-size:22px;font-weight:500;">第一次连接</h2>
+    <ul class="toc">
+      <li><a href="01a/01a-home.html">1A 首页</a><p>01a-home.html。点「连接相机」弹出「相机 Wi-Fi 已开启？」。取消留在这一页。确认进入 01b-connecting-back.html。</p></li>
+      <li><a href="01a/01b-connecting-back.html">1B 连接中返回</a><p>01b-connecting-back.html。正在连接。返回回到 01a-home.html。</p></li>
+    </ul>
+    <h2 style="margin:28px 0 8px;font-size:22px;font-weight:500;">第二次连接</h2>
+    <ul class="toc">
+      <li><a href="02a/02a-home.html">2A 首页</a><p>02a-home.html。正在自动连接。尝试次数每秒加一，并写着「请确认相机Wi-Fi已开启」。确认取消自动连接后进入 02a-home-return.html。</p></li>
+      <li><a href="02a/02a-home-return.html">找到的相机</a><p>02a-home-return.html。先显示找到的相机和「是否连接这个相机」，密码与「连接相机」在一起，下面是「已保存的相机连接」。连接进入 02a-connecting.html。</p></li>
+      <li><a href="02a/02a-connecting.html">正在连接</a><p>02a-connecting.html。返回回到 02a-home-return.html。</p></li>
+    </ul>
+  </main>
+</body>
+</html>

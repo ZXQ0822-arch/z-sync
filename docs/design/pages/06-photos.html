@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Z-Sync · 照片</title>
+  <link rel="stylesheet" href="screen.css" />
+</head>
+<body>
+  <aside>
+    <h1><a href="../index.html">Z-Sync</a></h1>
+    <p class="lead">暗色稿，就是现在应用在用的这一套。左边是全部页面。手机里的按钮按现在的用法往下走。标了「还没做」的，应用里还没有。</p>
+    <nav id="nav">
+      <a href="../index.html">目录</a>
+      <p style="margin:18px 0 0;color:#f4f1ea;font-weight:500;">第一次连接</p>
+      <a class="sub" href="../01a/01a-home.html">1A 首页</a>
+      <a class="sub" href="../01a/01b-connecting-back.html">1B 连接中返回</a>
+      <a class="sub" href="../01a/01c-cant-find-camera.html">找不到相机</a>
+      <a class="sub" href="../01a/01d-password-error.html">Wi-Fi 密码错误</a>
+      <p style="margin:18px 0 0;color:#f4f1ea;font-weight:500;">第二次连接</p>
+      <a class="sub" href="../02a/02a-home.html">2A 首页</a>
+      <a class="sub" href="../02a/02a-home-return.html">找到的相机</a>
+      <a class="sub" href="../02a/02a-connecting.html">正在连接</a>
+      <a class="sub" href="../02a/02c-cant-find-camera.html">找不到相机</a>
+      <a class="sub" href="../02a/02d-password-error.html">Wi-Fi 密码错误</a>
+      <p style="margin:18px 0 0;color:#f4f1ea;font-weight:500;">其它</p>
+      <a href="02b-connecting-back.html">2B 连接中返回</a>
+      <a href="05-waiting-for-system-confirmation.html">等系统确认</a>
+      <a class="on" href="06-photos.html">照片</a>
+      <a href="07-download-progress.html">本次下载</a>
+      <a href="08-style.html">风格</a>
+      <a class="soon" href="10-frame.html">边框 · 还没做</a>
+      <a class="soon" href="09-settings.html">设置 · 还没做</a>
+      <a href="11-hotspot-off.html">热点没开</a>
+    </nav>
+  </aside>
+  <main>
+    <div class="stage">
+      <div class="stage-phone">
+        <div class="bezel">
+          <div class="glass">
+            <div class="status"><span>9:41</span><span>5G</span></div>
+            <section class="screen on" id="daily">
+            <div class="topbar">
+              <b>今天</b>
+              <div class="head-side">
+                <em id="linkState">已连接 · 外网中断</em>
+                <a class="textbtn" id="openDownloads" href="07-download-progress.html">下载</a>
+              </div>
+            </div>
+            <div class="progress" id="recovery" hidden>
+              <div class="statusline" style="margin:0;align-items:center;font-size:15px;">
+                <i class="spin"></i>
+                <span>正在恢复相机连接<small style="display:block;color:var(--muted);font-size:12px;font-weight:400;">正在同一网络上重建会话</small></span>
+              </div>
+            </div>
+            <div class="progress" id="progress" hidden>
+              <div class="idx"><b id="progressIndex">1/4</b><span id="progressPct">0%</span></div>
+              <div class="file" id="progressName"></div>
+              <div class="track"><i id="progressFill"></i></div>
+              <div class="row"><span id="progressSaved">已保存 0 张</span><span id="progressLeft">还剩 0 张</span></div>
+            </div>
+            <div class="loadline" id="loadLine">正在加载照片，已显示 100 张</div>
+            <div class="filters"><span class="on">今天</span><span>10月20日</span><span>地点</span></div>
+            <div class="toolrow">
+              <div class="seg" id="viewSeg">
+                <button type="button" data-view="grid" class="on">大图</button>
+                <button type="button" data-view="list">列表</button>
+              </div>
+              <span>
+                <a class="textbtn" id="openStyle" href="08-style.html">风格</a>
+                <button type="button" class="textbtn" id="selectToggle">选择</button>
+              </span>
+            </div>
+            <div class="toolrow countrow" id="countRow">
+              <span class="countlabel">一屏</span>
+              <div class="seg" id="countSeg">
+                <button type="button" data-count="4">4 张</button>
+                <button type="button" data-count="6">6 张</button>
+                <button type="button" data-count="9" class="on">9 张</button>
+              </div>
+            </div>
+            <div class="gallery" id="gallery">
+              <div class="grid live" id="photoGrid"></div>
+              <div class="plist" id="photoList" hidden></div>
+              <div class="loadmore" id="loadMore">
+                <i class="spin"></i>
+                <span id="loadMoreText">正在加载下一批</span>
+              </div>
+            </div>
+            <div class="bar" id="actionBar" hidden>
+              <span id="pickedLabel">已选 0 张</span>
+              <span>
+                <button type="button" class="danger" id="batchDelete">删除</button>
+                <button type="button" id="batchSync" hidden>同步到相册</button>
+              </span>
+            </div>
+            <div class="preview" id="preview" hidden>
+              <div class="pv-top">
+                <button type="button" id="closePreview">关闭</button>
+                <span id="previewIndex">1 / 9</span>
+                <button type="button" id="previewDelete">删除</button>
+              </div>
+              <div class="pv-stage" id="previewStage">
+                <div class="shot" id="previewShot"></div>
+                <button type="button" class="edge" id="prevPhoto" aria-label="上一张"></button>
+                <button type="button" class="edge right" id="nextPhoto" aria-label="下一张"></button>
+              </div>
+              <div class="pv-bottom">
+                <div class="pv-meta">
+                  <b id="previewName">DSC_1042.JPG</b>
+                  <p id="previewMeta">8.4 MB · 14:21 · 左右滑看上一张</p>
+                </div>
+              </div>
+            </div>
+            <div class="confirm" id="confirm" hidden>
+              <div class="sheet">
+                <h3 id="confirmTitle">从相机删除</h3>
+                <p id="confirmBody">相机里的文件会删掉。已经进手机相册的也会一起删。不能恢复。</p>
+                <button class="btn ghost" type="button" id="confirmCancel" style="width:100%;background:transparent;color:#f4f1ea;border:1px solid rgba(244,241,234,.55);border-radius:14px;">取消</button>
+                <button class="btn danger" type="button" id="confirmOk" style="width:100%">删除</button>
+              </div>
+            </div>
+          </section>
+          </div>
+        </div>
+        <p class="caption" id="caption">一进来先取最近 100 张，顶部写着已显示几张。往下滑，到底部转圈时再取下一批，不会一次把卡里的全拉下来。先点选择，再勾照片，「同步到相册」才出现。右上角「下载」进入这次的记录。大图可以换一屏张数，列表点缩略图也能选。</p>
+      </div>
+
+    </div>
+  </main>
+  <script src="screen.js"></script>
+</body>
+</html>

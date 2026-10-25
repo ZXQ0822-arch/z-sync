@@ -1,0 +1,56 @@
+<!-- res/drawable/ic_launcher_zsync.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:aapt="http://schemas.android.com/aapt"
+        android:width="108dp"
+        android:height="108dp"
+        android:viewportWidth="100"
+        android:viewportHeight="100">
+
+    <!-- Background Layer (Can also be split into background.xml) -->
+    <path
+            android:pathData="M0,0h100v100h-100z"
+            android:fillColor="#0D0E11"/>
+
+    <!-- Titanium 'Z' Body -->
+    <path
+            android:pathData="M18,22 L82,22 L82,34 L42,66 L82,66 L82,78 L18,78 L18,66 L58,34 L18,34 Z"
+            android:strokeWidth="0.8"
+            android:strokeColor="#161618">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                    android:startX="0"
+                    android:startY="100"
+                    android:endX="100"
+                    android:endY="0"
+                    android:type="linear">
+                <item android:offset="0.0" android:color="#FF2D2E33"/>
+                <item android:offset="0.5" android:color="#FF4B4E58"/>
+                <item android:offset="1.0" android:color="#FF1B1C20"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Amber Strike 'S' -->
+    <path
+            android:pathData="M18,12 L60,45 L42,49 L84,88 L56,64 L68,60 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                    android:startX="18"
+                    android:startY="12"
+                    android:endX="84"
+                    android:endY="88"
+                    android:type="linear">
+                <item android:offset="0.0" android:color="#FFFCD34D"/>
+                <item android:offset="0.5" android:color="#FFF59E0B"/>
+                <item android:offset="1.0" android:color="#FFB45309"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Hairline Laser Core Reflection -->
+    <path
+            android:pathData="M19,13 L83,87"
+            android:strokeWidth="0.75"
+            android:strokeColor="#99FFFBEB"
+            android:strokeLineCap="round"/>
+</vector>

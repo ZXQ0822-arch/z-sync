@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ZSync" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#3A3A3E</item>
+        <item name="android:navigationBarColor">#3A3A3E</item>
+        <item name="android:windowBackground">#3A3A3E</item>
+    </style>
+</resources>

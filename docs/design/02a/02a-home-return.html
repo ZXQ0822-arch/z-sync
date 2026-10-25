@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Z-Sync · 自动连接已取消</title>
+  <link rel="stylesheet" href="../pages/screen.css" />
+  <style>
+    a.saved-row { transition: background 0.15s ease; }
+    a.saved-row:hover { background: #3c3c3e; }
+    a.saved-row:active { background: #2a2a2c; }
+    a.saved-row .go {
+      height: 32px; padding: 0 16px; border-radius: 10px;
+      background: #e6dfd4; color: #2c2926; border: 1px solid #e6dfd4;
+      font-size: 14px; font-weight: 500; letter-spacing: 0.04em;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    a.saved-row:hover .go { background: #f3efe8; border-color: #f3efe8; }
+    a.saved-row:active .go { background: #d9d1c6; border-color: #d9d1c6; }
+    a.connect-go {
+      margin: 14px 0 0; height: 56px; width: 100%;
+      border-radius: 999px; border: 0;
+      background: #f7f4ee; color: #1a1816;
+      box-shadow: 0 10px 28px rgba(0,0,0,.45);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      text-decoration: none; font-size: 17px; font-weight: 600; letter-spacing: 0.06em;
+      transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    a.connect-go:hover { background: #fff; box-shadow: 0 14px 32px rgba(0,0,0,.5); }
+    a.connect-go:active { background: #ddd6cb; transform: translateY(1px); box-shadow: 0 4px 12px rgba(0,0,0,.4); }
+    a.connect-go svg { width: 18px; height: 18px; flex: none; }
+  </style>
+</head>
+<body>
+  <aside>
+    <h1><a href="../index.html">Z-Sync</a></h1>
+    <p class="lead">暗色稿，就是现在应用在用的这一套。左边是全部页面。手机里的按钮按现在的用法往下走。标了「还没做」的，应用里还没有。</p>
+    <nav id="nav">
+      <a href="../index.html">目录</a>
+      <p style="margin:18px 0 0;color:#f4f1ea;font-weight:500;">第一次连接</p>
+      <a class="sub" href="../01a/01a-home.html">1A 首页</a>
+      <a class="sub" href="../01a/01b-connecting-back.html">1B 连接中返回</a>
+      <a class="sub" href="../01a/01c-cant-find-camera.html">找不到相机</a>
+      <a class="sub" href="../01a/01d-password-error.html">Wi-Fi 密码错误</a>
+      <p style="margin:18px 0 0;color:#f4f1ea;font-weight:500;">第二次连接</p>
+      <a class="sub" href="02a-home.html">2A 首页</a>
+      <a class="sub on" href="02a-home-return.html">找到的相机</a>
+      <a class="sub" href="02a-connecting.html">正在连接</a>
+      <a class="sub" href="02c-cant-find-camera.html">找不到相机</a>
+      <a class="sub" href="02d-password-error.html">Wi-Fi 密码错误</a>
+      <p style="margin:18px 0 0;color:#f4f1ea;font-weight:500;">其它</p>
+      <a href="../pages/02b-connecting-back.html">2B 连接中返回</a>
+      <a href="../pages/06-photos.html">照片</a>
+      <a href="../pages/07-download-progress.html">本次下载</a>
+      <a href="../pages/08-style.html">风格</a>
+      <a class="soon" href="../pages/10-frame.html">边框 · 还没做</a>
+      <a class="soon" href="../pages/09-settings.html">设置 · 还没做</a>
+      <a href="../pages/11-hotspot-off.html">热点没开</a>
+    </nav>
+  </aside>
+  <main>
+    <div class="stage">
+      <div class="stage-phone">
+        <div class="bezel">
+          <div class="glass">
+            <div class="status"><span>9:41</span><span>5G</span></div>
+            <section class="screen on" id="first">
+            <div class="pad">
+              <p style="margin:12px 0 6px;color:#f4f1ea;font-size:20px;font-weight:500;line-height:1.4;letter-spacing:-0.02em;">自动连接已取消</p>
+              <p style="margin:0 0 16px;color:#b0aaa2;font-size:16px;font-weight:400;line-height:1.4;">从下方选择要连接的相机，连接新相机</p>
+              <div style="border-radius:16px;overflow:hidden;background:#343436;">
+                <p id="foundCamera" style="margin:0;min-height:52px;display:flex;align-items:center;padding:0 14px;color:#f4f1ea;font-size:16px;font-weight:500;line-height:1.4;border-bottom:1px solid rgba(244,241,234,.16);">正在搜索</p>
+                <div class="field live" style="margin:0;height:52px;border:0;border-radius:0;padding:0 14px;"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><input id="firstPass" type="password" value="12345678" placeholder="请输入新相机的密码" autocomplete="off"><button class="eye" type="button" id="firstEye" aria-label="显示密码"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.5"/></svg></button></div>
+              </div>
+              <a class="connect-go" href="02a-connecting.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>连接相机</a>
+              <p style="margin:22px 0 8px;color:#f4f1ea;font-size:16px;font-weight:500;line-height:1.4;">已保存的相机连接</p>
+              <div style="border-radius:16px;overflow:hidden;background:#343436;">
+                <a class="saved-row" href="02a-connecting.html" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;padding:0 12px 0 16px;border-bottom:1px solid rgba(244,241,234,.16);text-decoration:none;color:#f4f1ea;">
+                  <span style="font-size:15px;font-weight:500;letter-spacing:0.01em;">NIKON Z 30 <span style="color:#b0aaa2;font-size:13px;font-weight:400;margin-left:8px;">Z30</span></span>
+                  <span class="go">连接</span>
+                </a>
+                <a class="saved-row" href="02a-connecting.html" style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;padding:0 12px 0 16px;text-decoration:none;color:#f4f1ea;">
+                  <span style="font-size:15px;font-weight:500;letter-spacing:0.01em;">Canon EOS R50 <span style="color:#b0aaa2;font-size:13px;font-weight:400;margin-left:8px;">R50</span></span>
+                  <span class="go">连接</span>
+                </a>
+              </div>
+            </div>
+          </section>
+          </div>
+        </div>
+        <p class="caption" id="caption">没找到相机时这里是正在搜索。找到一台就显示在密码框上面，输入密码后点连接相机。已保存的相机连接在最下面，点一行直接连接。</p>
+      </div>
+
+    </div>
+  </main>
+  <script src="../pages/screen.js"></script>
+  <script>
+    const foundName = "NIKON Z 30";
+    const foundCamera = document.getElementById("foundCamera");
+    window.setTimeout(() => {
+      foundCamera.textContent = foundName;
+    }, 1000);
+  </script>
+</body>
+</html>

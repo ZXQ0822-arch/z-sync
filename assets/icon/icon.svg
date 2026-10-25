@@ -1,0 +1,45 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="titaniumBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#18181B"/>
+            <stop offset="50%" stop-color="#0E0E11"/>
+            <stop offset="100%" stop-color="#060608"/>
+        </linearGradient>
+
+        <linearGradient id="titaniumZBody" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#7D8492"/>
+            <stop offset="35%" stop-color="#C3C8D2"/>
+            <stop offset="65%" stop-color="#767B86"/>
+            <stop offset="100%" stop-color="#4A4D55"/>
+        </linearGradient>
+
+        <linearGradient id="pureAmberStrike" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FCD34D"/>
+            <stop offset="45%" stop-color="#F59E0B"/>
+            <stop offset="100%" stop-color="#B45309"/>
+        </linearGradient>
+
+        <filter id="cleanDropShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="-1" dy="4" stdDeviation="3" flood-color="#000000" flood-opacity="0.95"/>
+            <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-color="#F59E0B" flood-opacity="0.2"/>
+        </filter>
+    </defs>
+
+    <!-- Base Body -->
+    <rect x="0" y="0" width="100" height="100" rx="22.5" fill="url(#titaniumBg)"/>
+    <rect x="1" y="1" width="98" height="98" rx="21.5" fill="none" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="0.8"/>
+
+    <!-- Monolithic Titanium 'Z' -->
+    <polygon points="18,22 82,22 82,34 42,66 82,66 82,78 18,78 18,66 58,34 18,34"
+             fill="url(#titaniumZBody)" stroke="#161618" stroke-width="0.8" stroke-linejoin="round"/>
+
+    <!-- Subtle Internal Chamfer -->
+    <polygon points="19.5,23.5 80.5,23.5 80.5,32.5 43.5,64.5 80.5,64.5 80.5,76.5 19.5,76.5 19.5,67.5 56.5,35.5 19.5,35.5"
+             fill="none" stroke="#FFFFFF" stroke-opacity="0.06" stroke-width="0.5"/>
+
+    <!-- Amber Energy Strike 'S' -->
+    <g filter="url(#cleanDropShadow)">
+        <polygon points="18,12 60,45 42,49 84,88 56,64 68,60" fill="url(#pureAmberStrike)"/>
+        <line x1="19" y1="13" x2="83" y2="87" stroke="#FFFBEB" stroke-width="0.75" stroke-linecap="round" opacity="0.6"/>
+    </g>
+</svg>

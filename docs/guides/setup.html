@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Z-Sync 使用手册</title>
+<style>
+  :root {
+    color-scheme: light;
+    /* Apple 风格色彩变量 */
+    --ink: #1d1d1f;          
+    --soft: #515154;         
+    --muted: #86868b;        
+    --line: #d2d2d7;         
+    --page-bg: #fbfbfd;      
+    --card-bg: #ffffff;      
+    --accent: #0071e3;       
+    
+    /* 多巴胺亮丽色彩 */
+    --must-bg: #ff3b30;      
+    --must-ink: #ffffff;
+    --tip-bg: #34c759;       
+    --tip-ink: #ffffff;
+    --warn-bg: #fff8eb;      
+    --warn-border: #ff9f0a;  
+  }
+  
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background: var(--page-bg);
+    font: 16px/1.78 -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* 基础布局 (默认 Desktop) */
+  .layout { display: grid; grid-template-columns: 264px minmax(0, 1fr); max-width: 1440px; margin: 0 auto; }
+
+  /* 侧边目录 */
+  nav {
+    position: sticky; top: 0; align-self: start;
+    height: 100vh; overflow-y: auto;
+    padding: 40px 20px 48px 30px;
+    border-right: 1px solid var(--line);
+    background: rgba(251, 251, 253, 0.7);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    z-index: 10;
+  }
+  nav .brand { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  nav .brand span {
+    display: block; margin-top: 3px;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  nav ol { list-style: none; margin: 26px 0 0; padding: 0; }
+  nav > ol > li { margin: 0; }
+  nav a {
+    display: block; padding: 6px 10px; margin: 2px -10px;
+    color: var(--soft); text-decoration: none; font-size: 14px; border-radius: 8px;
+    transition: all 150ms ease;
+  }
+  nav a:hover { background: rgba(0, 0, 0, 0.04); color: var(--ink); }
+  nav .subs { list-style: none; margin: 4px 0 10px; padding: 0 0 0 14px; }
+  nav .subs a {
+    font-size: 13.5px; padding: 4px 8px; color: var(--muted);
+    border-left: 2px solid transparent; border-radius: 0 8px 8px 0;
+  }
+  nav .subs a:hover { border-left-color: var(--line); background: rgba(0,0,0,0.03); color: var(--ink); }
+  nav .foot {
+    margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line);
+    font-size: 12px; color: var(--muted);
+  }
+
+  /* 正文 */
+  main { padding: 64px 56px 140px; max-width: 53rem; }
+  h1 { font-size: 34px; line-height: 1.25; letter-spacing: -0.022em; margin: 0 0 12px; font-weight: 700; }
+  .lead { font-size: 18px; line-height: 1.65; color: var(--soft); margin: 0; }
+  .meta { font-size: 14px; color: var(--muted); margin: 14px 0 0; }
+
+  h2 {
+    font-size: 24px; font-weight: 650; letter-spacing: -0.015em;
+    margin: 72px 0 20px; padding-top: 26px; border-top: 1px solid var(--line);
+    scroll-margin-top: 20px;
+  }
+  h2:first-of-type { margin-top: 52px; }
+  h3 {
+    font-size: 18px; font-weight: 650; margin: 34px 0 10px;
+    scroll-margin-top: 20px; letter-spacing: -0.01em;
+  }
+  p { margin: 12px 0; }
+  ul, ol { margin: 12px 0; padding-left: 21px; }
+  li { margin: 8px 0; }
+  li::marker { color: var(--muted); font-weight: 500; }
+  b { font-weight: 600; color: var(--ink); }
+  
+  code {
+    background: rgba(0, 0, 0, 0.05); border-radius: 6px; padding: 2px 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px;
+  }
+  kbd {
+    background: #fff; border: 1px solid #d2d2d7; border-radius: 6px;
+    padding: 2px 6px; font-family: inherit; font-size: 13px; font-weight: 600;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+  }
+
+  /* 表格响应式包裹 */
+  .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 24px 0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+    background: var(--card-bg);
+  }
+  table { 
+    width: 100%; border-collapse: separate; border-spacing: 0; font-size: 15px; 
+    min-width: 500px; /* 保证表格在手机上不会过度挤压 */
+  }
+  th, td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--page-bg); vertical-align: top; }
+  th {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
+    color: var(--muted); background: #fafafa;
+  }
+  tr:last-child td { border-bottom: 0; }
+
+  /* 标签 */
+  .chip {
+    display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+    padding: 3px 10px; border-radius: 999px; margin-right: 8px; vertical-align: 1px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .chip.must { background: var(--must-bg); color: var(--must-ink); }
+  .chip.tip { background: var(--tip-bg); color: var(--tip-ink); }
+
+  /* 卡片设计 */
+  .box { 
+    border-radius: 18px; padding: 22px 24px; margin: 24px 0; font-size: 15px;
+    background: var(--card-bg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+  .box.quick { background: linear-gradient(180deg, #ffffff 0%, #f9f9fc 100%); }
+  
+  .box.warn { 
+    background: var(--warn-bg); 
+    border-left: 5px solid var(--warn-border);
+    box-shadow: 0 4px 20px rgba(255, 159, 10, 0.1); 
+  }
+  .box h4 { margin: 0 0 10px; font-size: 15px; font-weight: 650; letter-spacing: 0.01em; }
+  .box :last-child { margin-bottom: 0; }
+  .box.warn { color: #5c3a00; }
+  .box.warn h4 { color: #b36b00; }
+
+  /* 步骤 */
+  .steps { list-style: none; margin: 20px 0; padding: 0; counter-reset: step; }
+  .steps > li { position: relative; padding: 0 0 22px 42px; counter-increment: step; }
+  .steps > li::before {
+    content: counter(step);
+    position: absolute; left: 0; top: 1px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    font-size: 13px; font-weight: 600; line-height: 26px; text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 113, 227, 0.3);
+  }
+  .steps > li:not(:last-child)::after {
+    content: ""; position: absolute; left: 12.5px; top: 34px; bottom: 6px;
+    width: 2px; background: var(--line); border-radius: 2px;
+  }
+  .steps .what { font-weight: 600; color: var(--ink); }
+  .steps ul { margin-top: 8px; }
+
+  .ico { display: inline-block; width: 1.1em; height: 1.1em; vertical-align: -0.2em; color: var(--accent); }
+  .ico svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .menu { font-weight: 600; }
+
+  /* =========================================================
+     响应式设计 (自适应: iPad / 平板)
+     ========================================================= */
+  @media (max-width: 1024px) {
+    .layout { grid-template-columns: 220px 1fr; }
+    nav { padding: 40px 16px 48px 20px; }
+    main { padding: 50px 40px 100px; }
+    h1 { font-size: 30px; }
+    .box { padding: 20px; }
+  }
+
+  /* =========================================================
+     响应式设计 (自适应: 手机 / 小屏幕)
+     ========================================================= */
+  @media (max-width: 767px) {
+    .layout { grid-template-columns: 1fr; display: block; }
+    
+    /* 手机端导航栏变为 iOS 风格顶部横向滑动胶囊 */
+    nav {
+      position: sticky; top: 0; left: 0; width: 100%;
+      height: auto; border-right: none; border-bottom: 1px solid var(--line);
+      padding: 12px 16px;
+      display: flex; flex-direction: column;
+      z-index: 999;
+    }
+    nav .brand { display: flex; align-items: baseline; justify-content: space-between; }
+    nav .brand span { display: inline-block; margin-top: 0; margin-left: 8px; }
+    nav .foot { display: none; /* 手机端隐藏底部版本号 */ }
+    
+    nav ol { 
+      display: flex; overflow-x: auto; gap: 8px; flex-wrap: nowrap; 
+      margin: 12px 0 0 0; padding: 0 0 4px 0;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; /* 隐藏滚动条 */
+    }
+    nav ol::-webkit-scrollbar { display: none; }
+    nav > ol > li { flex: 0 0 auto; margin: 0; }
+    
+    /* 胶囊按钮 */
+    nav a {
+      background: rgba(0, 0, 0, 0.05); color: var(--ink);
+      padding: 6px 14px; border-radius: 20px; margin: 0;
+      font-weight: 500; font-size: 13.5px;
+    }
+    nav a:hover { background: rgba(0, 0, 0, 0.08); }
+    nav .subs { display: none; /* 手机端横滑菜单中隐藏子菜单 */ }
+
+    /* 手机端正文调整 */
+    main { padding: 24px 16px 80px; max-width: 100%; }
+    h1 { font-size: 26px; }
+    h2 { font-size: 20px; margin: 48px 0 16px; padding-top: 20px; }
+    h3 { font-size: 17px; margin: 28px 0 10px; }
+    .box { border-radius: 16px; padding: 18px; margin: 18px 0; }
+    .steps > li { padding-left: 38px; }
+    .steps > li::before { width: 24px; height: 24px; line-height: 24px; font-size: 12px; }
+    .steps > li:not(:last-child)::after { left: 11.5px; top: 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav id="top">
+  <div class="brand">Z-Sync<span>User guide</span></div>
+  <ol>
+    <li><a href="#download">APP 下载</a></li>
+    <li><a href="#before">准备工作</a></li>
+    <li><a href="#first">首次连接</a></li>
+    <li><a href="#setup">最佳设置</a></li>
+    <li><a href="#again">日常连接</a></li>
+    <li><a href="#photos">查看与保存</a></li>
+    <li><a href="#delete">删除照片</a></li>
+    <li>
+      <a href="#trouble">故障排除</a>
+      <ul class="subs">
+        <li><a href="#t-cantfind">找不到相机</a></li>
+        <li><a href="#t-password">密码错误</a></li>
+        <li><a href="#t-lost">连接中断</a></li>
+        <li><a href="#t-background">后台中断</a></li>
+        <li><a href="#t-busy">相机被占用</a></li>
+        <li><a href="#t-nonet">网络说明</a></li>
+      </ul>
+    </li>
+    <li><a href="#logs">导出日志</a></li>
+    <li><a href="#faq">常见问题</a></li>
+  </ol>
+  <div class="foot">当前版本 0.1.40</div>
+</nav>
+
+<main>
+
+<h1>Z-Sync 使用手册</h1>
+<p class="meta">适用于尼康 Z30。其它尼康 Wi-Fi 相机理论上兼容，当前以 Z30 验证为主。</p>
+
+<h2 id="download">APP 下载</h2>
+<div class="box" style="border-left: 5px solid var(--accent); background: rgba(0, 113, 227, 0.04);">
+  <h4 style="color: var(--accent);">📥 安卓最新版安装包</h4>
+  <p>推荐使用手机浏览器直接打开下方链接进行下载（蓝奏云无需注册，免费不限速）：</p>
+  <div style="background: var(--card-bg); padding: 14px 18px; border-radius: 12px; margin-top: 12px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);">
+    <div style="margin-bottom: 8px;"><b>下载地址：</b> <a href="https://wwaob.lanzouw.com/ijkUJ4dc3m2h" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: 600; word-break: break-all;">https://wwaob.lanzouw.com/ijkUJ4dc3m2h</a></div>
+    <div><b>提取密码：</b> <kbd style="color: var(--ink);">bdpn</kbd></div>
+  </div>
+</div>
+
+<div class="box quick">
+  <h4>快速上手四步曲</h4>
+  <ol>
+    <li>相机：按 <kbd>MENU</kbd> → <span class="menu">设定菜单</span> <span class="ico" role="img" aria-label="扳手图标"><svg viewBox="0 0 24 24"><path d="M14.5 6.2a4.2 4.2 0 0 0-5.8 5.8L4 16.7 7.3 20l4.7-4.7a4.2 4.2 0 0 0 5.8-5.8L15 12.3 11.7 9z"/></svg></span> → <span class="menu">连接至智能设备</span> → <span class="menu">Wi-Fi 连接</span> → <span class="menu">建立 Wi-Fi 连接</span>，保持在此页面。</li>
+    <li>手机：打开 Z-Sync，输入相机屏幕上显示的密码，点击「连接相机」。</li>
+    <li>系统弹窗：选中 <b>NIKON 开头</b> 的网络，点击「允许」或「连接」。（<b>请勿点击返回</b>）</li>
+    <li>等待一两秒即可自动进入照片流页面。勾选需要保存的照片，点击「同步到相册」。</li>
+  </ol>
+</div>
+
+<h2 id="before">准备工作</h2>
+
+<div class="table-wrap">
+  <table>
+    <tr><th>项目</th><th>系统与设备要求</th></tr>
+    <tr><td>手机系统</td><td><b>Android 12 或更高版本</b></td></tr>
+    <tr><td>已验证手机</td><td>小米 15（HyperOS / Android 16）、一加 9RT（ColorOS / Android 14）</td></tr>
+    <tr><td>支持相机</td><td>尼康 Z30</td></tr>
+    <tr><td>首次连接必备</td><td>安装 Z-Sync；相机处于开机状态；获取相机屏幕上显示的 Wi-Fi 密码</td></tr>
+  </table>
+</div>
+
+<div class="box warn">
+  <h4>⚠️ 保持默认，请勿修改相机 Wi-Fi 名称</h4>
+  <p>为了做到连接体验简单清晰，本应用目前<b>仅自动识别并支持以 NIKON 开头的默认网络名称 (SSID)</b>。请不要擅自在相机里更改 Wi-Fi 名称。后续版本可能会开放自定义名称的支持。</p>
+</div>
+
+<div class="box">
+  相机同一时间仅支持连接一台设备。使用 Z-Sync 前，请确保已<b>彻底退出 SnapBridge（尼康官方 App）</b>。若此前曾使用 SnapBridge 连接过该相机，请前往手机「设置 → WLAN」找到 NIKON 开头的网络，点击「忘记此网络」。
+</div>
+
+<h2 id="first">首次连接指南</h2>
+
+<p><b>首次连接需进行完整的安全验证（输入相机密码及授予系统网络权限）。此操作仅需执行一次。</b>密码会显示在相机屏幕上，输入一次后应用将自动记忆，后续无需重复输入。</p>
+
+<h3>第一步：相机端开启 Wi-Fi</h3>
+<ol class="steps">
+  <li><span class="what">相机开机，按下 <kbd>MENU</kbd> 键。</span></li>
+  <li><span class="what">进入「设定菜单」。</span>（顶部菜单栏的扳手图标<span class="ico" role="img" aria-label="扳手"><svg viewBox="0 0 24 24"><path d="M14.5 6.2a4.2 4.2 0 0 0-5.8 5.8L4 16.7 7.3 20l4.7-4.7a4.2 4.2 0 0 0 5.8-5.8L15 12.3 11.7 9z"/></svg></span>）</li>
+  <li><span class="what">依次点击：「连接至智能设备」 → 「Wi-Fi 连接」 → 「建立 Wi-Fi 连接」。</span></li>
+  <li><span class="what">保持当前页面常亮。</span>屏幕将显示网络名称（SSID）和密码，请确保屏幕未熄灭。</li>
+</ol>
+<p>注意：请勿将相机连接至家用路由器，也不要在手机系统的「设置 → WLAN」中手动连接。<b>所有连接操作均需在 Z-Sync 应用内完成。</b></p>
+
+<h3>第二步：手机端建立连接</h3>
+<ol class="steps">
+  <li><span class="what">打开 Z-Sync，并授予全部必要权限：</span>
+    <ul>
+      <li><b>附近的设备</b>：用于搜索并发现相机热点。</li>
+      <li><b>通知</b>：用于保障后台稳定传输照片。</li>
+      <li><b>位置</b>：Android 系统要求，仅用于获取 Wi-Fi 列表，本应用不记录任何位置信息。</li>
+    </ul>
+  </li>
+  <li><span class="what">输入相机屏幕上的密码，点击「连接相机」。</span></li>
+  <li><span class="what">在系统弹窗中，选中 NIKON 开头的网络，点击「允许」或「连接」。</span>这是系统级强制流程。
+    <div class="box warn">
+      <b>切勿点击“取消”或按系统返回键。</b>否则将中断连接流程，需要从头重新操作。
+    </div>
+  </li>
+  <li><span class="what">等待片刻。</span>系统将自动进入照片浏览页，看到照片即代表连接成功。</li>
+</ol>
+
+<h2 id="setup">保持稳定连接的最佳设置</h2>
+
+<h3>相机端：延长屏幕常亮时间</h3>
+<p><span class="chip tip">强烈建议</span>相机的默认休眠时间较短（约 30 秒），一旦屏幕熄灭，Wi-Fi 将同步断开。</p>
+<ol>
+  <li>按 <kbd>MENU</kbd> → 找到「自定义设定菜单」<span class="ico" role="img" aria-label="铅笔"><svg viewBox="0 0 24 24"><path d="M4 20l4-1 9.4-9.4a2 2 0 0 0 0-2.8l-.2-.2a2 2 0 0 0-2.8 0L5 16z"/><path d="M14 6l4 4"/></svg></span>（铅笔图标）。</li>
+  <li>进入「c3 电源关闭延迟」。</li>
+  <li>选择「待机定时器」，建议修改为 <b>10 分钟</b>。如需长时间传图可选择「无限」。</li>
+</ol>
+<p>此外，请前往 <kbd>MENU</kbd> → 设定菜单 → 将 <b>节能（照片模式）</b> 设置为 <b>禁用</b>，防止屏幕提前变暗。</p>
+
+<h3>手机端：配置后台运行权限</h3>
+<p><span class="chip must">重要设置</span>若未正确配置此项，传输照片期间切换至其他应用将导致连接立即中断。</p>
+<p><b>以 小米 / 红米（HyperOS、MIUI）为例</b>：请前往 <b>设置 → 应用设置 → 应用管理 → Z-Sync</b>，调整以下两项：</p>
+<ol>
+  <li><b>省电策略</b> → 修改为 <b>无限制</b>。这是保持后台连接的核心，若保留“智能限制”，切出应用几秒后连接便会断开。</li>
+  <li><b>通知管理</b> → 开启“允许通知”。若通知设置中包含名为 <b>相机连接</b> 的子选项，请一并开启（如有此项，它是保持后台连接的关键；若无该选项，保持主通知开启即可）。</li>
+</ol>
+<p>设置成功后，通知栏会常驻显示「Z-Sync · 正在运行」。传图时会变更为「正在保存 X/X 张照片」。</p>
+<div class="box">
+  <b>一加 / OPPO / realme（ColorOS）用户注意：</b>受系统限制，即便在“耗电管理”中设置为“允许完全后台行为”，切出应用仍可能断开。建议在这类手机上保持在照片页，直至传图完成。
+</div>
+
+<h2 id="again">日常再次连接</h2>
+
+<p><b>完成首次连接后，后续使用无需再输入密码。只需开启相机 Wi-Fi 并打开 Z-Sync，系统将自动建立连接。</b> 只有在以下三种情况需重新输入：相机密码被修改、在手机上清除了保存的记录、或更换了另一台相机。</p>
+<ol class="steps">
+  <li><span class="what">相机端开启 Wi-Fi。</span>与首次连接相同，每次开关机后均需重新开启。</li>
+  <li><span class="what">打开 Z-Sync，等待自动连接。</span>系统弹窗通常不会再次出现。</li>
+  <li><span class="what">选择照片，点击「同步到相册」。</span></li>
+</ol>
+<p>若停留在连接页无响应，请点击「上次连接 NIKON_Z_30_xxxxx」右侧的「连接」按钮。若密码已更改，则需重新输入新密码。</p>
+
+<h2 id="photos">照片查看与保存至相册</h2>
+
+<h3>照片页概览</h3>
+<ul>
+  <li>照片按<b>拍摄日期</b>分组，同一天的照片归类在同一标题下。</li>
+  <li>右上角可切换「最新 / 最早」排序，中间可切换「大图 / 列表」视图及一屏 4 / 6 / 9 张的显示密度。</li>
+  <li>支持按格式筛选：全部、JPEG、RAW / NEF、MOV、MP4。</li>
+  <li>点击单张照片可查看大图、旋转方向，下方显示文件名、大小、光圈及镜头信息。</li>
+</ul>
+
+<h3>保存至手机相册</h3>
+<ol class="steps">
+  <li><span class="what">点击右上角「选择」。</span></li>
+  <li><span class="what">勾选需要保存的照片。</span>（未勾选任何照片时，底部不会显示同步按钮）</li>
+  <li><span class="what">点击「同步到相册」，等待进度条完成。</span>进度卡片会实时显示 <code>1/3</code>、已保存数量及剩余数量。</li>
+  <li><span class="what">打开手机相册，查找 Z-Sync 专属相册。</span></li>
+</ol>
+
+<div class="table-wrap">
+  <table>
+    <tr><th>内容类型</th><th>保存路径</th></tr>
+    <tr><td>照片（JPEG、NEF）</td><td><code>Pictures/Z-Sync</code></td></tr>
+    <tr><td>视频（MOV、MP4）</td><td><code>Movies/Z-Sync</code></td></tr>
+  </table>
+</div>
+<p>照片与视频在手机相册中存放于<b>两个不同的独立文件夹</b>。相册中已存在的同名文件会自动跳过，不会产生重复。</p>
+
+<h3>本次传输记录</h3>
+<p>照片页右上角的「下载 · 本次 3 张」记录了本次连接成功保存的内容。点击进入后，每行显示缩略图与文件名，点击可查看大图。即使仅保存了 RAW 格式，应用也会提取 NEF 文件自带的预览图供查看。</p>
+
+<h2 id="delete">照片删除说明</h2>
+
+<div class="box warn">
+  <h4>⚠️ 双端删除的区别与注意事项</h4>
+  <div class="table-wrap" style="box-shadow: none; margin-top: 6px; margin-bottom: 0;">
+    <table style="border: 1px solid rgba(255, 159, 10, 0.3);">
+      <tr><th>操作位置</th><th>删除对象</th><th>确认框提示</th></tr>
+      <tr><td>照片大图页面的「删除」</td><td>相机存储卡上的原文件</td><td>「从相机删除这张照片？」</td></tr>
+      <tr><td>「下载」记录中的「从相册删除」</td><td>手机相册中的已下载文件</td><td>「从手机相册删除这张照片？」</td></tr>
+    </table>
+  </div>
+</div>
+
+<ul>
+  <li>若在相机端删除：同一次快门生成的 JPEG 和 NEF 文件将被同步删除。</li>
+  <li>相机中被标记为「保护」的照片无法通过应用删除。</li>
+  <li>若从手机相册中删除：相机存储卡上的原文件不受任何影响。</li>
+</ul>
+
+<h2 id="trouble">常见故障排除</h2>
+<p>请先确认屏幕上的具体提示信息，再对照以下情况进行排查。</p>
+
+<h3 id="t-cantfind">找不到相机</h3>
+<p>页面标题显示「找不到相机」，下方提示「连接已超时一分钟」，代表系统在一分钟内未扫描到相机热点。</p>
+<ol>
+  <li>确认相机 Wi-Fi 页面是否依然常亮（屏幕需显示网络名和密码）。若已熄灭，请参考「首次连接指南」重新开启。</li>
+  <li>点击「继续连接」，系统将弹出「相机 Wi-Fi 已开启」的确认框。</li>
+  <li>若相机确已开启请点击「确认」；若未开启请点击「取消」，先前往相机端操作。</li>
+</ol>
+<p>若频繁超时，常见原因包括：<b>SnapBridge 仍在后台运行占用通道</b>，或未授予应用<b>「附近的设备」权限</b>。</p>
+
+<h3 id="t-password">密码错误</h3>
+<p>屏幕提示「Wi-Fi 密码错误」。</p>
+<ol>
+  <li>检查相机屏幕上当前显示的密码（相机重启热点后，密码可能会发生变更）。</li>
+  <li>在输入框中填入最新密码，点击「再次连接」。</li>
+</ol>
+
+<h3 id="t-lost">连接中途断开</h3>
+<p>屏幕提示「连接已断开，正在重新连接」，应用将自动尝试重连（需等待十几秒）。</p>
+<ul>
+  <li><b>重连成功</b>：继续传输，已保存至相册的照片会自动跳过。</li>
+  <li><b>持续无法连接</b>：通常是相机端已关闭热点。请在相机端重新开启 Wi-Fi，返回应用点击「继续连接」。</li>
+</ul>
+
+<h3 id="t-background">应用在后台连接中断</h3>
+<p>此情况表明系统在后台强制清理了 Z-Sync。请返回参考「保持稳定连接的最佳设置」一节，将<b>省电策略修改为无限制，并允许通知</b>。</p>
+<p>在小米设备上，该设置尤为关键，配置正确后切出应用十余分钟亦可保持连接。若设置后依然断开，请检查系统 WLAN 设置中是否开启了「自动切换到移动数据」等智能网络选项，尝试将其关闭。</p>
+
+<h3 id="t-busy">相机正连接其他应用</h3>
+<ol>
+  <li>彻底退出 SnapBridge（若无需使用建议卸载）。</li>
+  <li>前往手机「设置 → WLAN」，若仍记录着相机网络，请点击并选择「忘记此网络」。</li>
+  <li>返回 Z-Sync，点击「重试」。</li>
+</ol>
+
+<h3 id="t-cancel">系统授权意外取消</h3>
+<p>应用会自动返回连接页。请重新点击「连接相机」，并在系统弹窗中选中 NIKON 开头的网络，点击「允许」或「连接」。</p>
+
+<h3 id="t-album">相册中未找到照片</h3>
+<ul>
+  <li>照片存放于 <b>Pictures/Z-Sync</b>，视频存放于 <b>Movies/Z-Sync</b>。请在相册的「文件夹」或「相册夹」视图中查找，避免仅在“时间轴/照片”流中翻阅。</li>
+  <li>部分系统相册存在刷新缓存，可尝试下拉刷新页面，或重启相册应用。</li>
+</ul>
+
+<h3 id="t-nonet">连接相机时的网络说明</h3>
+<p>此属正常现象。手机连接的是相机的局域 Wi-Fi，该网络本身无法访问外网。若需在传图时保持设备联网，请确保手机已开启移动数据（流量），系统通常会自动通过蜂窝网络处理外部网络请求。如果未开启移动数据，连接相机期间将无法上网。传图完毕后断开 Z-Sync，手机即会自动恢复原网络。</p>
+
+<h2 id="logs">导出日志与反馈</h2>
+<p>若问题反复出现且上述方法均无效，请导出系统日志以供排查。无需连接电脑或安装其他工具。</p>
+<ol class="steps">
+  <li><span class="what">首先让问题复现一次。</span>请按照出错时的步骤重新操作一遍，确保日志记录了最新的错误场景。</li>
+  <li><span class="what">返回连接页面。</span>连接断开后，应用会自动回到该页面。</li>
+  <li><span class="what">点击页面底部、版本号右侧的「导出日志」。</span></li>
+  <li><span class="what">保存日志文件后，请将其发送至 <b>小红书用户交流群</b> 内。</span></li>
+</ol>
+<div class="box">
+  日志文件不包含任何私人照片内容。文件超过 6 小时会自动清理，手机本地最多保留 5 个，不会占用存储空间。遇到问题请尽快导出，以免日志过期丢失。
+</div>
+<p>反馈时请补充以下信息：手机型号及系统版本、操作到哪一步出现的问题、屏幕上的具体提示文字、以及大概发生的时间。</p>
+
+<h2 id="faq">常见问题速查表</h2>
+<div class="table-wrap">
+  <table>
+    <tr><th>遇到的情况</th><th>排查与解决建议</th></tr>
+    <tr><td>搜不到相机</td><td>检查相机 Wi-Fi 是否开启；SnapBridge 是否已退出；「附近的设备」权限是否已授权</td></tr>
+    <tr><td>提示密码错误</td><td>核对相机屏幕上的最新密码，重新输入</td></tr>
+    <tr><td>一直停在「正在连接」</td><td>等待一分钟将转入「找不到相机」页面，参照该章节处理</td></tr>
+    <tr><td>应用在后台连接中断</td><td>将应用省电策略改为「无限制」，并开启系统通知</td></tr>
+    <tr><td>相机屏幕熄灭</td><td>半按相机快门唤醒，必要时重新开启相机 Wi-Fi</td></tr>
+    <tr><td>照片未出现在相册</td><td>前往 Pictures/Z-Sync 文件夹查找；确认应用内同步进度已跑完</td></tr>
+    <tr><td>视频找不到</td><td>前往 Movies/Z-Sync 文件夹查找，与照片不在同一目录</td></tr>
+    <tr><td>同一张照片保存了两次</td><td>正常情况下会自动跳过重复文件；若确有重复，请导出日志并反馈</td></tr>
+    <tr><td>连上相机后无法上网</td><td>属正常现象，相机 Wi-Fi 无外网连接；若需上网请开启手机数据流量；使用完毕后断开即可恢复</td></tr>
+  </table>
+</div>
+
+</main>
+</div>
+</body>
+</html>

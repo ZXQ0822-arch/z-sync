@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  自适应图标的前景层：拉丝钛面的 Z，上面斜着一道琥珀色的闪电。
+
+  两处和设计稿不同，都是为了在小尺寸下活得下来：
+  1. group 缩到 0.68。自适应图标只用中间 72/108 的区域，原稿的闪电铺到了边上，
+     不缩小会被圆形遮罩切掉角。
+  2. 钛面比原稿提亮一档（原稿 #2D2E33 在近黑底上，到了 48dp 就看不见 Z 了）。
+     形状和配色关系没变，只是把金属调亮。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <group
+        android:pivotX="50"
+        android:pivotY="50"
+        android:scaleX="0.66"
+        android:scaleY="0.66">
+
+        <!-- 拉丝钛面的 Z -->
+        <path
+            android:pathData="M18,22 L82,22 L82,34 L42,66 L82,66 L82,78 L18,78 L18,66 L58,34 L18,34 Z"
+            android:strokeWidth="0.9"
+            android:strokeColor="#101014"
+            android:strokeLineJoin="round">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:startX="0"
+                    android:startY="100"
+                    android:endX="100"
+                    android:endY="0"
+                    android:type="linear">
+                    <item android:offset="0.0" android:color="#FF7D8492" />
+                    <item android:offset="0.35" android:color="#FFC3C8D2" />
+                    <item android:offset="0.65" android:color="#FF767B86" />
+                    <item android:offset="1.0" android:color="#FF4A4D55" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- 琥珀色的 S 闪电 -->
+        <path android:pathData="M18,12 L60,45 L42,49 L84,88 L56,64 L68,60 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:startX="18"
+                    android:startY="12"
+                    android:endX="84"
+                    android:endY="88"
+                    android:type="linear">
+                    <item android:offset="0.0" android:color="#FFFCD34D" />
+                    <item android:offset="0.45" android:color="#FFF59E0B" />
+                    <item android:offset="1.0" android:color="#FFB45309" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- 闪电中心更亮的那条芯 -->
+        <path
+            android:pathData="M19,13 L83,87"
+            android:strokeWidth="0.7"
+            android:strokeColor="#80FFFBEB"
+            android:strokeLineCap="round" />
+    </group>
+</vector>

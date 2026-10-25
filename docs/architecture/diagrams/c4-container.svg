@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="820" viewBox="0 0 1260 820" role="img">
+  <title>Container</title>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6"
+            markerWidth="10" markerHeight="10" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,1 L11,6 L0,11 Z" fill="#1c1c1e"/>
+    </marker>
+  </defs>
+  <text x="28" y="34" text-anchor="start" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="20" font-weight="650" fill="#1c1c1e">Container</text>
+  <rect x="24" y="230" width="190" height="140" rx="3" fill="#f4f7fb" stroke="#163e64" stroke-width="1.6"/>
+<text x="119.0" y="256" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="650" fill="#1c1c1e">Person</text>
+<text x="119.0" y="279" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="400" fill="#555555">[Person]</text>
+<text x="119.0" y="298" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="400" fill="#1c1c1e">Uses the app</text>
+<text x="119.0" y="318" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="400" fill="#1c1c1e">on the phone</text>
+<rect x="268" y="64" width="980" height="430" rx="4" fill="none" stroke="#8a8a8a" stroke-width="1.4" stroke-dasharray="7 5"/>
+<text x="288" y="92" text-anchor="start" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="15" font-weight="650" fill="#1c1c1e">Z-Sync</text>
+<text x="372" y="92" text-anchor="start" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="400" fill="#555555">[Software System]</text>
+<rect x="308" y="114" width="900" height="340" rx="3" fill="#f3f8fc" stroke="#2b6ca3" stroke-width="2.0"/>
+<text x="758.0" y="140" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="18" font-weight="650" fill="#1c1c1e">Z-Sync Android app</text>
+<text x="758.0" y="165" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="400" fill="#555555">[Container: Kotlin / Android]</text>
+<text x="758.0" y="184" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="400" fill="#1c1c1e">One process. shared/ is compiled into this APK.</text>
+<text x="758.0" y="205" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="400" fill="#1c1c1e">UI (Compose)</text>
+<text x="758.0" y="226" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="400" fill="#1c1c1e">link / Wi-Fi</text>
+<text x="758.0" y="247" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="400" fill="#1c1c1e">Camera session (PTP)</text>
+<text x="758.0" y="268" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="400" fill="#1c1c1e">PhoneGallery (MediaStore)</text>
+<text x="758.0" y="289" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="400" fill="#1c1c1e">EncryptedSharedPreferences file z-sync-link</text>
+<text x="758.0" y="310" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="400" fill="#333333">SSID, password, GUID. Inside the app, not its own container.</text>
+<rect x="24" y="640" width="250" height="150" rx="3" fill="#f7f7f7" stroke="#5c5c5c" stroke-width="1.6"/>
+<text x="149.0" y="666" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="650" fill="#1c1c1e">Android Wi-Fi</text>
+<text x="149.0" y="689" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="400" fill="#555555">[Platform]</text>
+<text x="149.0" y="708" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="400" fill="#1c1c1e">WifiNetworkSpecifier</text>
+<text x="149.0" y="728" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="400" fill="#1c1c1e">Joins the camera hotspot</text>
+<rect x="560" y="640" width="280" height="150" rx="3" fill="#f3f3f3" stroke="#5c5c5c" stroke-width="1.6"/>
+<text x="700.0" y="666" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="650" fill="#1c1c1e">Nikon Z30</text>
+<text x="700.0" y="689" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="400" fill="#555555">[External Software System]</text>
+<text x="700.0" y="708" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="400" fill="#1c1c1e">Hotspot and photos</text>
+<rect x="940" y="640" width="290" height="150" rx="3" fill="#f7f7f7" stroke="#5c5c5c" stroke-width="1.6"/>
+<text x="1085.0" y="666" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="650" fill="#1c1c1e">MediaStore</text>
+<text x="1085.0" y="689" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="400" fill="#555555">[Platform]</text>
+<text x="1085.0" y="708" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="400" fill="#1c1c1e">Pictures/Z-Sync</text>
+<text x="1085.0" y="728" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="400" fill="#1c1c1e">Write and delete</text>
+<path d="M 214 300 L 308 300" fill="none" stroke="#1c1c1e" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="261" y="286" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="400" fill="#1c1c1e" stroke="#ffffff" stroke-width="4" paint-order="stroke">Uses</text>
+<path d="M 460 454 L 460 580 L 149 580 L 149 640" fill="none" stroke="#1c1c1e" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 700 454 L 700 640" fill="none" stroke="#1c1c1e" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 1085 454 L 1085 640" fill="none" stroke="#1c1c1e" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="304" y="560" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="400" fill="#1c1c1e" stroke="#ffffff" stroke-width="4" paint-order="stroke">Password joins hotspot</text>
+<text x="304" y="576" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="400" fill="#1c1c1e" stroke="#ffffff" stroke-width="4" paint-order="stroke">WifiNetworkSpecifier</text>
+<text x="860" y="600" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="400" fill="#1c1c1e" stroke="#ffffff" stroke-width="4" paint-order="stroke">PTP/IP TCP 15740</text>
+<text x="860" y="618" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="400" fill="#1c1c1e" stroke="#ffffff" stroke-width="4" paint-order="stroke">Thumbnails and whole files</text>
+<text x="1072" y="528" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="400" fill="#1c1c1e" stroke="#ffffff" stroke-width="4" paint-order="stroke">MediaStore write / delete</text>
+<text x="1072" y="546" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="400" fill="#1c1c1e" stroke="#ffffff" stroke-width="4" paint-order="stroke">Pictures/Z-Sync</text>
+</svg>

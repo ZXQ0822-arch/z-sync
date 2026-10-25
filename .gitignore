@@ -1,0 +1,19 @@
+.DS_Store
+.idea/
+*.iml
+.gradle/
+local.properties
+build/
+captures/
+*.apk
+*.aab
+.cxx/
+.externalNativeBuild/
+.kotlin/
+.worktrees/
+keystore/
+keystore.properties
+dist/
+
+# platform-tools 不进仓库，自己下载放到 tools/adb/
+tools/adb/

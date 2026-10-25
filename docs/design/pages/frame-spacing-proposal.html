@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Z-Sync · 页面框架与安全区统一方案</title>
+<style>
+  :root {
+    --bg: #1c1c1e;
+    --panel: #242426;
+    --card: #48484c;
+    --phone: #3a3a3e;
+    --ink: #f4f1ea;
+    --muted: #b0aaa2;
+    --line: rgba(244, 241, 234, 0.22);
+    --stone: #f7f4ee;
+    --stone-ink: #1a1816;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0 auto; max-width: 1080px; padding: 48px 28px 96px;
+    background: var(--bg); color: var(--ink);
+    font: 15px/1.6 "PingFang SC", "Noto Sans SC", sans-serif;
+  }
+  h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 6px; }
+  .lead { color: var(--muted); font-size: 14px; margin: 0 0 8px; }
+  h2 { font-size: 19px; font-weight: 600; margin: 52px 0 12px; padding-top: 20px; border-top: 1px solid var(--line); }
+  h3 { font-size: 15px; font-weight: 600; margin: 26px 0 10px; color: var(--ink); }
+  p { margin: 10px 0; }
+  code { background: rgba(255,255,255,.08); padding: 1px 5px; border-radius: 5px; font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 13px; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .bad { color: #ff8f85; }
+  .good { color: #8fe0a0; }
+
+  .row { display: flex; flex-wrap: wrap; gap: 40px; margin: 22px 0 8px; }
+  .col { display: flex; flex-direction: column; gap: 10px; }
+  .label { font-size: 12px; letter-spacing: 0.06em; color: var(--muted); }
+  .label b { color: var(--ink); font-weight: 600; }
+
+  .phone {
+    width: 288px; height: 604px; border-radius: 42px; padding: 7px;
+    background: linear-gradient(160deg, #6a6a6e, #3e3e42 42%, #2a2a2e);
+    box-shadow: 0 26px 50px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.14);
+    flex: 0 0 auto;
+  }
+  .glass {
+    height: 100%; border-radius: 36px; background: var(--phone); overflow: hidden;
+    display: flex; flex-direction: column; position: relative;
+  }
+  /* 系统状态栏：代表 statusBarsPadding 那一段。
+     信息垂直居中，顶部留出物理边距——真机的状态栏就是这样，不是贴着外框的。 */
+  .statusbar {
+    height: 54px; flex: 0 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px;
+    font-size: 12px; font-weight: 500; letter-spacing: .05em; color: var(--ink);
+    position: relative;
+  }
+  /* 居中的打孔前摄：给顶部留白一个物理理由。
+     用 top:50% + translate 让它和左右两侧的文字共用同一条水平中线；
+     写成 top:13px 会和居中后的文字差七像素，看着像偏了。
+     对齐的是小米 15 那种圆形打孔；换成灵动岛只需把宽高和圆角改成 90px / 28px / 20px。 */
+  .statusbar::before {
+    content: ""; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 13px; height: 13px; border-radius: 50%;
+    background: #000;
+    box-shadow: inset 0 0 2px rgba(255,255,255,.12), 0 0 0 1px rgba(255,255,255,.05);
+  }
+  .statusbar .r { display: flex; gap: 5px; color: var(--muted); }
+
+  .screen {
+    flex: 1; min-height: 0; display: flex; flex-direction: column;
+    position: relative;
+  }
+  .screen.cramped { padding: 0 22px; }            /* 现在：连接页 22dp，无安全区（这里 0 顶部） */
+  .screen.roomy   { padding: 16px 16px 0; }       /* 统一后：安全区 + 16dp，左右 16dp */
+  .screen.photos  { padding: 4px 16px 0; }        /* 照片页现在：左右已经是 16dp，只是顶部太窄 */
+  .screen.photos.roomy { padding: 16px 16px 0; }
+
+  .eyebrow { font-size: 10px; letter-spacing: .2em; color: var(--muted); margin: 0 0 10px; }
+  .title { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 0; }
+  .title.large { font-size: 34px; }               /* 连接页主标题：Large Title */
+  .title.t2 { font-size: 22px; }                  /* 状态标题：Title 2 */
+  .sub { color: var(--muted); font-size: 13px; margin: 10px 0 0; line-height: 1.5; }
+  .cardlist { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .card {
+    background: var(--card); border-radius: 14px; padding: 13px 14px;
+    font-size: 14px; color: var(--ink);
+  }
+  .btn {
+    margin-top: 16px; height: 46px; border-radius: 999px; background: var(--stone);
+    color: var(--stone-ink); font-weight: 600; font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn.ghost { background: #343436; color: #fff; font-weight: 500; }
+  .spacer { flex: 1; }
+  .footer {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 10px; color: var(--muted);
+  }
+  .footer.tight { padding-bottom: 2px; }          /* 现在：贴着手势条 */
+  .footer.loose { padding-bottom: 16px; }         /* 统一后：离手势条 16dp */
+  .homebar { flex: 0 0 auto; height: 26px; display: flex; align-items: center; justify-content: center; }
+  .homebar i { width: 104px; height: 4px; border-radius: 999px; background: rgba(244,241,234,.5); }
+
+  .note {
+    background: var(--panel); border-radius: 14px; padding: 14px 16px;
+    color: var(--muted); font-size: 13px; line-height: 1.65; margin: 16px 0;
+  }
+  .note b { color: var(--ink); }
+  .note.warn { box-shadow: inset 3px 0 0 #ff8f85; }
+  ul { margin: 10px 0; padding-left: 20px; }
+  li { margin: 6px 0; }
+</style>
+</head>
+<body>
+
+<h1>页面框架与安全区统一方案</h1>
+<p class="lead">给「连接页标题贴着状态栏、底部版本贴着手势条」这件事出的稿子。先看方案，认可了再改代码和现有页面稿。</p>
+
+<div class="note warn">
+  <b>先纠正我上一版的两个错。</b>上一版我写了「边距统一 20dp」「标题统一 28sp」，这两条都不成立：
+  20 不在 <code>design-language.md</code> 的间距刻度里（刻度的 4、8、12、16、22、32），
+  而 34 / 28 / 22 三档标题在规格里本来就有各自的用途，不该合并。
+  这一版改成<b>只用已有的刻度</b>，并且把标题按原规格套回去。
+</div>
+
+<h2>一、现在为什么会贴</h2>
+<p>应用用了 <code>enableEdgeToEdge()</code>，内容从屏幕最上面开始画，本来就压在系统状态栏下面。三个页面各写了一套边距，结果只有两个页面做了避让：</p>
+
+<table>
+  <thead>
+    <tr><th>项目</th><th>连接页（Journey）</th><th>照片页</th><th>规格里应该是</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>状态栏避让</td><td class="bad">没有</td><td>有</td><td>全部要有</td></tr>
+    <tr><td>手势条避让</td><td class="bad">没有</td><td>有</td><td>全部要有</td></tr>
+    <tr><td>左右边距</td><td class="num">22dp</td><td class="num">16dp</td><td>二选一，全套统一</td></tr>
+    <tr><td>主标题</td><td class="num">34sp</td><td class="num">28sp</td><td>Large 34 / Title 28，本来就该不同</td></tr>
+    <tr><td>状态页标题</td><td class="num bad">20sp</td><td>—</td><td class="good">22sp（Title 2），20 不在规格里</td></tr>
+  </tbody>
+</table>
+
+<p>所以真正要修的只有三件：<b>连接页补两个安全区</b>、<b>连接页那几个 20sp 的状态标题改成 22sp</b>、<b>左右边距三个页面选同一个值</b>。标题的 34 / 28 之分是对的，不动。</p>
+
+<h3>对照一：连接页</h3>
+<div class="row">
+  <div class="col">
+    <div class="label"><b>现在</b> · 34sp 主标题，没有安全区，标题顶在状态栏</div>
+    <div class="phone">
+      <div class="glass">
+        <div class="statusbar"><span>0:45</span><span class="r">5G ▮▮ 47</span></div>
+        <div class="screen cramped" style="padding-top:0">
+          <div class="title large">正在自动连接</div>
+          <p class="sub">已扫描 1 次<br>通常几秒到 1 分钟，请稍等<br>上次连接 NIKON_Z_30_12345</p>
+          <div class="cardlist"><div class="card">正在搜索相机</div></div>
+          <div class="btn ghost">取消自动连接</div>
+          <div class="spacer"></div>
+          <div class="footer tight"><span>v0.1.37 (37)</span><span>导出日志</span></div>
+        </div>
+        <div class="homebar"><i></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="label"><b>统一后</b> · 34sp 主标题保留，安全区 + 16dp</div>
+    <div class="phone">
+      <div class="glass">
+        <div class="statusbar"><span>0:45</span><span class="r">5G ▮▮ 47</span></div>
+        <div class="screen roomy">
+          <div class="title large">正在自动连接</div>
+          <p class="sub">已扫描 1 次<br>通常几秒到 1 分钟，请稍等<br>上次连接 NIKON_Z_30_12345</p>
+          <div class="cardlist"><div class="card">正在搜索相机</div></div>
+          <div class="btn ghost">取消自动连接</div>
+          <div class="spacer"></div>
+          <div class="footer loose"><span>v0.1.37 (37)</span><span>导出日志</span></div>
+        </div>
+        <div class="homebar"><i></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3>对照二：连不上 / 密码错这类状态页（20sp → 22sp）</h3>
+<div class="row">
+  <div class="col">
+    <div class="label"><b>现在</b> · 20sp</div>
+    <div class="phone">
+      <div class="glass">
+        <div class="statusbar"><span>0:45</span><span class="r">5G ▮▮ 47</span></div>
+        <div class="screen cramped" style="padding-top:0">
+          <div class="title" style="font-size:20px">找不到相机</div>
+          <p class="sub">相机可能没开机，或不在旁边。<br>请打开相机的 Wi-Fi，连接后再试。</p>
+          <div class="spacer"></div>
+          <div class="footer tight"><span>v0.1.37 (37)</span><span>导出日志</span></div>
+        </div>
+        <div class="homebar"><i></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="label"><b>统一后</b> · 22sp（Title 2），安全区 + 16dp</div>
+    <div class="phone">
+      <div class="glass">
+        <div class="statusbar"><span>0:45</span><span class="r">5G ▮▮ 47</span></div>
+        <div class="screen roomy">
+          <div class="title t2">找不到相机</div>
+          <p class="sub">相机可能没开机，或不在旁边。<br>请打开相机的 Wi-Fi，连接后再试。</p>
+          <div class="spacer"></div>
+          <div class="footer loose"><span>v0.1.37 (37)</span><span>导出日志</span></div>
+        </div>
+        <div class="homebar"><i></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3>对照三：照片页</h3>
+<div class="row">
+  <div class="col">
+    <div class="label"><b>现在</b> · 左右 16dp 没问题，只是标题离状态栏 4dp</div>
+    <div class="phone">
+      <div class="glass">
+        <div class="statusbar"><span>0:45</span><span class="r">5G ▮▮ 47</span></div>
+        <div class="screen photos">
+          <div class="title">照片</div>
+          <p class="sub" style="margin-top:4px">已显示 12 / 930 张</p>
+          <div class="cardlist">
+            <div class="card">2026-10-25 · 6 张</div>
+            <div class="card">2026-10-24 · 4 张</div>
+          </div>
+          <div class="spacer"></div>
+          <div class="footer tight"><span>v0.1.37 (37)</span><span>导出日志</span></div>
+        </div>
+        <div class="homebar"><i></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="label"><b>统一后</b> · 左右仍是 16dp，顶部 16dp</div>
+    <div class="phone">
+      <div class="glass">
+        <div class="statusbar"><span>0:45</span><span class="r">5G ▮▮ 47</span></div>
+        <div class="screen photos roomy">
+          <div class="title">照片</div>
+          <p class="sub" style="margin-top:6px">已显示 12 / 930 张</p>
+          <div class="cardlist">
+            <div class="card">2026-10-25 · 6 张</div>
+            <div class="card">2026-10-24 · 4 张</div>
+          </div>
+          <div class="spacer"></div>
+          <div class="footer loose"><span>v0.1.37 (37)</span><span>导出日志</span></div>
+        </div>
+        <div class="homebar"><i></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="note">
+  <b>看这三组时注意：</b>右边三张的「标题到状态栏」「版本行到手势条」是一致的；左边三张各不相同。照片页的左右边距本来就和统一后一样，不用动。
+</div>
+
+<h2>二、和主流应用对不对得上</h2>
+<p>按你说的「跟哔哩哔哩这些别太奇怪」逐项对一遍：</p>
+
+<table>
+  <thead><tr><th>项目</th><th>主流做法</th><th>本方案</th><th>对不对得上</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>系统栏避让</td>
+      <td>所有应用都避让状态栏和手势条</td>
+      <td><code>statusBarsPadding()</code> + <code>navigationBarsPadding()</code></td>
+      <td class="good">一致。这就是这次真正要修的</td>
+    </tr>
+    <tr>
+      <td>左右边距</td>
+      <td>Material 规范和哔哩哔哩、微信这类列表页都用 <b>16dp</b></td>
+      <td><b>16dp</b></td>
+      <td class="good">一致（连接页从 22dp 收到 16dp）</td>
+    </tr>
+    <tr>
+      <td>顶部留白</td>
+      <td>有应用栏时由 44–56dp 的栏撑开；没有应用栏的大标题页，标题离栏底约 <b>16dp</b></td>
+      <td>安全区 + <b>16dp</b></td>
+      <td class="good">一致</td>
+    </tr>
+    <tr>
+      <td>标题层级</td>
+      <td>页面大标题 28–34sp，区块/状态标题 20–22sp</td>
+      <td>34 / 28 / 22 三档（沿用现有规格）</td>
+      <td class="good">一致</td>
+    </tr>
+    <tr>
+      <td>标题样式</td>
+      <td>哔哩哔哩、微信、飞书顶部是<b>一条 44–56dp 的应用栏</b>：左边返回、中间 17–20sp 标题、右边操作</td>
+      <td><b>没有应用栏</b>，页面里直接放 34sp 大标题（iOS 大标题那种路子）</td>
+      <td class="bad">不一致，见下面的说明</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="note warn">
+  <b>这一条要说清楚：</b>如果目标是「看起来和哔哩哔哩一样」，那么真正差的不是间距，而是<b>顶部有没有一条应用栏</b>。
+  哔哩哔哩那种是「系统状态栏 → 44–56dp 应用栏（返回 / 标题 / 操作）→ 内容」，标题一直贴在栏里，不占内容空间。
+  现在这套是 iOS 大标题的路子：没有栏，标题直接进内容区。
+  <br><br>
+  两种都是主流，但混着看就会觉得「怪」。这次我建议<b>只修安全区和边距</b>，保持大标题路线 —— 换成应用栏是一次真正的改版（返回放在哪、标题居中还是左对齐、滚动时标题怎么收起都要定），不该塞进一个间距修复里。
+  <br><br>
+  你要走应用栏那条也能做，那就单独开一份稿子，别和这次混在一起。
+</div>
+
+<h2>三、统一后的页面骨架</h2>
+<p>所有页面套同一层框架，页面里只写内容，不再各自处理系统栏。数值全部取自现有刻度，没有新数字：</p>
+
+<table>
+  <thead><tr><th>层</th><th>值</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>状态栏</td><td class="num">statusBarsPadding()</td><td>避让系统状态栏</td></tr>
+    <tr><td>标题上方间距</td><td class="num">16dp</td><td>从安全区下沿算，不是从屏幕顶算；刻度的 16</td></tr>
+    <tr><td>左右边距</td><td class="num">16dp</td><td>三个页面统一；照片网格本来就是 16，不动</td></tr>
+    <tr><td>主标题</td><td class="num">34sp（连接页）/ 28sp（照片、下载）</td><td>沿用规格里的 Large Title / Title</td></tr>
+    <tr><td>状态标题</td><td class="num">22sp</td><td>Title 2；把现在的 20sp 改过来</td></tr>
+    <tr><td>底部行（版本 + 导出日志）</td><td class="num">距手势条 16dp</td><td>行内文字 11sp</td></tr>
+    <tr><td>手势条</td><td class="num">navigationBarsPadding()</td><td>避让系统手势条</td></tr>
+    <tr><td>键盘</td><td class="num">imePadding()</td><td>只有密码页需要</td></tr>
+  </tbody>
+</table>
+
+<h2>四、要改哪里</h2>
+<table>
+  <thead><tr><th>位置</th><th>改什么</th></tr></thead>
+  <tbody>
+    <tr><td><code>ui/theme</code></td><td>新增三个常量：<code>PageMargin = 16.dp</code>、<code>PageTopGap = 16.dp</code>、<code>PageBottomGap = 16.dp</code>，三个页面引用同一份，不再各写各的</td></tr>
+    <tr><td><code>JourneyScreen.kt</code></td><td>根布局补 <code>statusBarsPadding()</code> 和 <code>navigationBarsPadding()</code>；左右 22dp → 16dp；纵向 28dp → 16dp；状态标题 20sp → 22sp；底部版本行加 16dp 下边距。34sp 主标题<b>不动</b></td></tr>
+    <tr><td><code>ConnectScreen.kt</code></td><td>左右 22dp → 16dp；纵向 8dp → 16dp。34sp 标题不动</td></tr>
+    <tr><td><code>PhotoScreen.kt</code></td><td>只有标题区纵向 4dp → 16dp；左右 16dp 不动、标题 28sp 不动</td></tr>
+    <tr><td><code>design-language.md</code></td><td>补一句「页面统一使用 16dp 左右边距和 16dp 顶部间距」，把这次的结论写进规格，免得下次又各写各的</td></tr>
+    <tr><td><code>design/pages/*.html</code></td><td>现有页面稿按同一套数值更新</td></tr>
+  </tbody>
+</table>
+
+<h2>五、验收</h2>
+<ul>
+  <li>三个页面标题到状态栏的距离一致，都是安全区之下 16dp。</li>
+  <li>底部版本行离手势条 16dp；「导出日志」仍在这一行右侧。</li>
+  <li>三个页面左右边距都是 16dp，切换页面时文字不会横向跳。</li>
+  <li>「找不到相机」「Wi-Fi 密码错误」这类状态标题用 22sp，和规格一致；连接页主标题仍是 34sp、照片页仍是 28sp。</li>
+  <li>密码页弹出键盘时输入框不被挡住。</li>
+  <li>小屏（720×1280 级别）上标题和底部行都还在屏幕内。</li>
+</ul>
+
+<h2>六、待定：标题要不要降一档</h2>
+<p>这一条不影响前面三节，是单独一个决定。两张图都用了修好之后的安全区和 16dp 间距，只有标题字号不同，直接对比看哪个更像「正常应用」。</p>
+
+<div class="row">
+  <div class="col">
+    <div class="label"><b>34sp</b> · iOS Large Title，设置 / 照片 / 备忘录用的就是这个值（规格里的 34）</div>
+    <div class="phone">
+      <div class="glass">
+        <div class="statusbar"><span>0:45</span><span class="r">5G ▮▮ 47</span></div>
+        <div class="screen roomy">
+          <div class="title large">自动连接已取消</div>
+          <p class="sub">从下方选择要连接的相机，连接新相机</p>
+          <div class="cardlist">
+            <div class="card">正在搜索相机</div>
+            <div class="card">NIKON_Z_30_12345</div>
+          </div>
+          <div class="btn">连接相机 →</div>
+          <div class="spacer"></div>
+          <div class="footer loose"><span>v0.1.37 (37)</span><span>导出日志</span></div>
+        </div>
+        <div class="homebar"><i></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="label"><b>28sp</b> · 规格里的 Title，和照片页、本次下载页同一个字号</div>
+    <div class="phone">
+      <div class="glass">
+        <div class="statusbar"><span>0:45</span><span class="r">5G ▮▮ 47</span></div>
+        <div class="screen roomy">
+          <div class="title">自动连接已取消</div>
+          <p class="sub">从下方选择要连接的相机，连接新相机</p>
+          <div class="cardlist">
+            <div class="card">正在搜索相机</div>
+            <div class="card">NIKON_Z_30_12345</div>
+          </div>
+          <div class="btn">连接相机 →</div>
+          <div class="spacer"></div>
+          <div class="footer loose"><span>v0.1.37 (37)</span><span>导出日志</span></div>
+        </div>
+        <div class="homebar"><i></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<table>
+  <thead><tr><th>选</th><th>好处</th><th>代价</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><b>34sp</b>（现在）</td>
+      <td>连接页只有一个决定，大字把它点明；和 iOS 一整套观感一致</td>
+      <td>和下面 13sp 的说明文字落差大，有人会觉得「拔出来」；长标题（自动连接已取消）折行时更占高度</td>
+    </tr>
+    <tr>
+      <td><b>28sp</b>（降一档）</td>
+      <td>和照片页、下载页统一，切页面时标题不跳；标题和正文的比例更收敛</td>
+      <td>连接页少了一个视觉焦点，和 iOS 那种大标题路子就分开了；规格里 Large Title 那一档会没人用</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <b>我的看法：</b>「看着突兀」主要是标题紧贴状态栏造成的，不是 34sp 这个值本身。上面两张图都已经补了 16dp 间距，
+  34sp 那张现在看着也就不撞了。所以倾向<b>先不动字号</b>，等安全区修完在真手机上看一眼再定；真要降，改成 28sp 是改一个常量的事，随时能退。
+</div>
+
+<div class="note">
+  <b>关于模拟机里的状态栏：</b>那一条是「系统状态栏」的占位，应用自己不画它。稿子里把时间和信号放在状态栏的垂直中线上、并在顶部留出物理边距，是为了照真机的观感；中间的圆点是小米 15 那种居中打孔前摄，只用来解释顶部那块留白，不是应用要画的东西。
+</div>
+
+</body>
+</html>

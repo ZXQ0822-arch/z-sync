@@ -1,0 +1,36 @@
+---
+description: How to change, commit, install, and report Zync work
+alwaysApply: true
+---
+
+# Zync workflow
+
+## Commits
+
+- Commit locally. Never push.
+- Commit messages are in English.
+- One logical change per commit. A permission fix, a logging pass, a version bump, and an error-display change are four commits, not one.
+- Run `./gradlew :shared:test` before committing code under `shared/`.
+
+## Builds for the phone
+
+1. Bump `versionCode` by 1 and `versionName` in `androidApp/build.gradle.kts` for every build that goes to the phone.
+2. Install, then verify with adb before asking for a retest:
+   - `adb shell dumpsys package app.z-sync | grep -E "versionCode|versionName|lastUpdateTime"`
+   - `adb shell sha256sum <pm path>` must equal `shasum -a 256 androidApp/build/outputs/apk/debug/androidApp-debug.apk`
+3. If either check fails, install again and recheck. Do not ask for a retest on a mismatch.
+4. Tell the user the version shown at the bottom of the connect screen, for example `v0.1.2 (2)`.
+
+## On the phone
+
+- Only touch `app.z-sync`: install, launch, its own logs, screenshots. Do not change system settings or other apps.
+- Logs use the `Zync` tag. INFO for normal steps, ERROR for failures. Never log the password itself, only its length.
+
+## Telling the user
+
+After every code change, build, or install, say explicitly that it is done and what they should do next. Do not assume they noticed.
+
+```text
+Bad:  (install finishes, nothing said)
+Good: 已装好 v0.1.3 (3)，连接页底部应显示这个版本。打开相机热点后点连接，弹窗里点允许。
+```
